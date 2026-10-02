@@ -27,9 +27,9 @@ export function NavBar({ cartCount }: { cartCount: number }) {
       <NavLink to="/" end>
         Shop
       </NavLink>
-      <NavLink to="/xray">X-Ray</NavLink>
+      {/* <NavLink to="/xray">X-Ray</NavLink>
       <NavLink to="/control">Control</NavLink>
-      <NavLink to="/monitor">Monitor</NavLink>
+      <NavLink to="/monitor">Monitor</NavLink> */}
       <NavLink to="/cart" className="cart-link">
         Cart ({cartCount})
       </NavLink>

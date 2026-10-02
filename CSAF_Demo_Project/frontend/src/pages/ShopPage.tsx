@@ -21,10 +21,11 @@ export function ShopPage() {
     <div className="page shop-layout">
       <div>
         <section className="hero">
-          <h1>Find it on Nozama — then let Nozi help, carefully.</h1>
+          <h1>Find it on Nozama </h1>
           <p>
-            Fictional marketplace for a cybersecurity fair. Nozi can search and recommend.
-            Secure application code decides whether cart and checkout actions are allowed.
+            Fictional marketplace for a cybersecurity fair. Nozi can search and
+            recommend. Secure application code decides whether cart and checkout
+            actions are allowed.
           </p>
         </section>
         <div className="grid">
