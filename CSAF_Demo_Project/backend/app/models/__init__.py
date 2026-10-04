@@ -12,6 +12,7 @@ from app.models.entities import (
     SecurityEvent,
     Seller,
     ToolPermission,
+    #Picture,
 )
 
 __all__ = [
@@ -28,4 +29,5 @@ __all__ = [
     "SecurityEvent",
     "Seller",
     "ToolPermission",
+    #"Picture",
 ]

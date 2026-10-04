@@ -14,6 +14,11 @@ from app.database import Base, get_engine, get_session_factory
 from app.models import entities  # noqa: F401  — register metadata
 from app.seed import seed_database
 
+"""
+from pathlib import Path
+from fastapi.staticfiles import StaticFiles
+"""
+
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
@@ -51,6 +56,11 @@ app.include_router(products.router)
 app.include_router(cart.router)
 app.include_router(checkout.router)
 app.include_router(control.router)
+
+"""
+IMG_DIR = Path(__file__).resolve().parent.parent / "img"   # backend/img
+app.mount("../../frontend/public/img", StaticFiles(directory=IMG_DIR), name="img")
+"""
 
 
 @app.get("/api/health")

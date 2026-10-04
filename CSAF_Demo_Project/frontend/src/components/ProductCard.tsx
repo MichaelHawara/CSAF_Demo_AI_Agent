@@ -1,7 +1,40 @@
 import { Link } from "react-router-dom";
 import type { Product } from "../types";
 
+
+/*
 export function ProductThumb({ product, tall }: { product: Pick<Product, "name" | "accent">; tall?: boolean }) {
+  return (
+    <div
+      className="thumb"
+      style={{
+        background: `linear-gradient(145deg, ${product.accent}, #111)`,
+        height: tall ? 240 : undefined,
+      }}
+    >
+      {product.name.split(" ")[0]}
+    </div>
+  );
+}
+  */
+
+export function ProductThumb({
+  product,
+  tall,
+}: {
+  product: Pick<Product, "name" | "accent" | "url" >;
+  tall?: boolean;
+}) {
+  if (product.url) {
+    return (
+      <img
+        className="thumb"
+        src={product.url}
+        alt={product.name}
+        style={{ height: tall ? 240 : undefined, objectFit: "contain", background: "#fff" }}
+      />
+    );
+  }
   return (
     <div
       className="thumb"
