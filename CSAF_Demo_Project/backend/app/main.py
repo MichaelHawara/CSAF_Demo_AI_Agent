@@ -16,6 +16,11 @@ from app.seed import seed_database
 from app.services.agents import reset_agent
 from app.services.constants import DEMO_AGENT_ID
 
+"""
+from pathlib import Path
+from fastapi.staticfiles import StaticFiles
+"""
+
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
@@ -62,6 +67,11 @@ app.include_router(products.router)
 app.include_router(cart.router)
 app.include_router(checkout.router)
 app.include_router(control.router)
+
+"""
+IMG_DIR = Path(__file__).resolve().parent.parent / "img"   # backend/img
+app.mount("../../frontend/public/img", StaticFiles(directory=IMG_DIR), name="img")
+"""
 
 
 @app.get("/api/health")

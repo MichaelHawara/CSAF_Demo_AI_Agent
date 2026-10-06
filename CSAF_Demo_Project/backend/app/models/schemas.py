@@ -22,6 +22,7 @@ class ProductPublic(BaseModel):
     category: str
     accent: str
     image_alt_text_public: str = ""
+    url: str = ""
 
 
 class ReviewPublic(BaseModel):

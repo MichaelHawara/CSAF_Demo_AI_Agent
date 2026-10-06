@@ -29,6 +29,7 @@ def to_public_product(product: Product) -> ProductPublic:
         description=product.description,
         category=product.category,
         accent=product.accent,
+        url=product.url,
         image_alt_text_public=safe_alt,
     )
 

@@ -60,7 +60,9 @@ class Product(Base):
     review_count: Mapped[int] = mapped_column(Integer, default=0)
     description: Mapped[str] = mapped_column(Text)
     category: Mapped[str] = mapped_column(String(80), default="headphones")
+    #We will remove accent later
     accent: Mapped[str] = mapped_column(String(40), default="#232f3e")
+    url: Mapped[str] = mapped_column(String(400), default="")
     is_malicious: Mapped[bool] = mapped_column(Boolean, default=False)
     # Seller-controlled channels. Returned only by the agent page-reader tool.
     hidden_description: Mapped[str] = mapped_column(Text, default="")
@@ -70,6 +72,8 @@ class Product(Base):
 
     seller = relationship("Seller", back_populates="products")
     reviews = relationship("Review", back_populates="product")
+    
+    #pictures = relationship("Picture", back_populates="product", cascade="all, delete-orphan")
 
 
 class Review(Base):
@@ -85,6 +89,22 @@ class Review(Base):
 
     product = relationship("Product", back_populates="reviews")
 
+"""
+class Picture(Base):
+    #Product image. Stored as a file path/URL, or as raw bytes in the DB.
+
+    __tablename__ = "pictures"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    product_id: Mapped[str] = mapped_column(ForeignKey("products.id"))
+    url: Mapped[str] = mapped_column(String(400), default="")
+    alt_text: Mapped[str] = mapped_column(Text, default="")     
+    is_primary: Mapped[bool] = mapped_column(Boolean, default=False)
+    position: Mapped[int] = mapped_column(Integer, default=0)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+    product = relationship("Product", back_populates="pictures")
+"""
 
 class AgentInstance(Base):
     """A configuration + memory space, not a trained model.
@@ -238,3 +258,6 @@ class ToolPermission(Base):
     tool_name: Mapped[str] = mapped_column(String(80), default="")
     allowed: Mapped[bool] = mapped_column(Boolean, default=False)
     reason: Mapped[str] = mapped_column(Text, default="")
+
+
+

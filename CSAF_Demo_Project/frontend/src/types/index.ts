@@ -10,7 +10,7 @@ export interface Product {
   description: string;
   category: string;
   accent: string;
-  image_alt_text_public: string;
+  url: string;
 }
 
 export interface Review {
