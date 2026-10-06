@@ -18,6 +18,26 @@ def test_reset_clears_cart_and_conversation(client):
     assert events == []
 
 
+def test_backend_startup_clears_demo_conversation(client):
+    from fastapi.testclient import TestClient
+
+    from app.main import app
+
+    client.post(
+        f"/api/agents/{DEMO_AGENT_ID}/messages",
+        json={"content": "Find wireless headphones"},
+    )
+
+    with TestClient(app) as restarted_client:
+        detail = restarted_client.get(f"/api/agents/{DEMO_AGENT_ID}").json()
+        events = restarted_client.get(f"/api/agents/{DEMO_AGENT_ID}/events").json()
+
+    assert detail["messages"] == []
+    assert events == []
+    assert detail["display_name"] == "Alex"
+    assert detail["system_instruction"].startswith("You are Alex,")
+
+
 def test_delete_removes_agent_owned_records(client):
     created = client.post(
         "/api/agents",

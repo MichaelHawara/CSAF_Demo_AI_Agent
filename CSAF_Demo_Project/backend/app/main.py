@@ -13,6 +13,8 @@ from app.api import agents, cart, checkout, control, products
 from app.database import Base, get_engine, get_session_factory
 from app.models import entities  # noqa: F401  — register metadata
 from app.seed import seed_database
+from app.services.agents import reset_agent
+from app.services.constants import DEMO_AGENT_ID
 
 
 @asynccontextmanager
@@ -22,6 +24,15 @@ async def lifespan(_app: FastAPI):
     session = get_session_factory()()
     try:
         seed_database(session)
+        demo_agent = session.get(entities.AgentInstance, DEMO_AGENT_ID)
+        if demo_agent is not None:
+            demo_agent.display_name = "Alex"
+            demo_agent.system_instruction = (demo_agent.system_instruction or "").replace(
+                "You are Nozi, the Nozama shopping assistant.",
+                "You are Alex, the Nozama shopping assistant.",
+                1,
+            )
+            reset_agent(session, demo_agent)
     finally:
         session.close()
     yield

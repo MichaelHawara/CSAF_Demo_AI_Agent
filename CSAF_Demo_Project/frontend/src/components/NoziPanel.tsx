@@ -102,7 +102,17 @@ export function NoziPanel({
   return (
     <aside className="nozi">
       <div className="nozi-head">
-        <h2>Nozi - Your Shopping Assistant</h2>
+        <div className="nozi-heading-row">
+          <h2>Alex - Your Shopping Assistant</h2>
+          <a
+            className="nozi-tools-button"
+            href="/control"
+            target="nozama-control-monitor"
+            title="Open Control and Monitor"
+          >
+            Tools
+          </a>
+        </div>
         {/* {mock ? (
           <div className="demo-mode">Deterministic Demo Mode</div>
         ) : (
@@ -124,14 +134,9 @@ export function NoziPanel({
           Checkout confirmation: Required
         </div>
         <div className="row">
-          <span
-            className={`mode-pill ${agent?.mode === "patched" ? "patched" : ""}`}
-          >
-            {agent?.mode || "vulnerable"} mode
-          </span>
           <span className="status-line">
             Status:{" "}
-            {busy || sending ? "Nozi is working…" : agent?.status || "idle"}
+            {busy || sending ? "Alex is working…" : agent?.status || "idle"}
           </span>
         </div>
         {reading?.name ? (
@@ -143,7 +148,7 @@ export function NoziPanel({
             .filter((m) => m.role === "user" || m.role === "assistant")
             .map((m) => (
               <div key={m.id} className={`bubble ${m.role}`}>
-                <strong>{m.role === "user" ? "You" : "Nozi"}:</strong>{" "}
+                <strong>{m.role === "user" ? "You" : "Alex"}:</strong>{" "}
                 {m.content}
               </div>
             ))}
@@ -159,7 +164,7 @@ export function NoziPanel({
             className="prompt"
             value={text}
             onChange={(e) => setText(e.target.value)}
-            placeholder="Ask Nozi to find a product…"
+            placeholder="Ask Alex to find a product…"
           />
           <div className="row" style={{ marginTop: 8 }}>
             <button
@@ -202,7 +207,7 @@ export function NoziPanel({
           prewritten request or curate your own.
         </p>
         {/* <p className="muted">
-          Nozi can propose actions. The Nozama backend decides whether they are allowed.
+          Alex can propose actions. The Nozama backend decides whether they are allowed.
           Demo transaction only—no real purchase occurred.
         </p> */}
       </div>

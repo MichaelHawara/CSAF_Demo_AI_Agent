@@ -1,4 +1,5 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import { useEffect } from "react";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { NavBar } from "./components/NavBar";
 import { DemoProvider, useDemo } from "./demoContext";
 import { CartPage } from "./pages/CartPage";
@@ -11,6 +12,13 @@ import { XRayPage } from "./pages/XRayPage";
 
 function Shell() {
   const demo = useDemo();
+  const location = useLocation();
+
+  useEffect(() => {
+    const operatorPage = location.pathname === "/control" || location.pathname === "/monitor";
+    window.name = operatorPage ? "nozama-control-monitor" : "";
+  }, [location.pathname]);
+
   return (
     <>
       <NavBar cartCount={demo.cart?.quantity || 0} />

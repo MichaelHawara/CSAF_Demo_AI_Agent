@@ -55,7 +55,7 @@ class CartPublic(BaseModel):
 
 
 class AgentCreate(BaseModel):
-    display_name: str = "Nozi"
+    display_name: str = "Alex"
     customer_id: str | None = None
     provider: Literal["mock", "gemini"] = "mock"
     mode: Literal["vulnerable", "patched"] = "vulnerable"

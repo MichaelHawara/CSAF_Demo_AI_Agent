@@ -23,7 +23,7 @@ export function ShopPage() {
         <section className="hero">
           <h1>Find it on Nozama </h1>
           <p>
-            Fictional marketplace for a cybersecurity fair. Nozi can search and
+            Fictional marketplace for a cybersecurity fair. Alex can search and
             recommend. Secure application code decides whether cart and checkout
             actions are allowed.
           </p>

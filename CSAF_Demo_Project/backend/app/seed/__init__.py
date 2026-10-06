@@ -64,7 +64,7 @@ def seed_database(session: Session) -> None:
             AgentInstance(
                 id=DEMO_AGENT_ID,
                 customer_id=DEMO_CUSTOMER_ID,
-                display_name="Nozi",
+                display_name="Alex",
                 provider="mock",
                 model="mock-deterministic",
                 mode="vulnerable",

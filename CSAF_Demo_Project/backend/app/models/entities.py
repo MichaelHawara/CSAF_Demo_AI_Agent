@@ -97,7 +97,7 @@ class AgentInstance(Base):
 
     id: Mapped[str] = mapped_column(String(64), primary_key=True)
     customer_id: Mapped[str] = mapped_column(ForeignKey("customers.id"))
-    display_name: Mapped[str] = mapped_column(String(160), default="Nozi")
+    display_name: Mapped[str] = mapped_column(String(160), default="Alex")
     provider: Mapped[str] = mapped_column(String(32), default="mock")
     model: Mapped[str] = mapped_column(String(80), default="mock-deterministic")
     mode: Mapped[str] = mapped_column(String(32), default="vulnerable")

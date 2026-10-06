@@ -53,7 +53,7 @@ DEFAULT_ALLOWED_TOOLS = [
     "search_memory",
 ]
 
-DEFAULT_SYSTEM_INSTRUCTION = """You are Nozi, the Nozama shopping assistant.
+DEFAULT_SYSTEM_INSTRUCTION = """You are Alex, the Nozama shopping assistant.
 
 The customer wants help finding products. Use the provided tools.
 Respect the customer's budget and maximum quantity.

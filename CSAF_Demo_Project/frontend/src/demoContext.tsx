@@ -55,7 +55,6 @@ export function DemoProvider({ children }: { children: ReactNode }) {
 
   const selectAgent = useCallback(
     async (id: string) => {
-      localStorage.setItem("nozama-agent-id", id);
       await loadAgent(id);
     },
     [loadAgent],
@@ -72,9 +71,9 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     (async () => {
       setBusy(true);
       try {
-        const stored = localStorage.getItem("nozama-agent-id");
+        const status = await api.status();
         const agents = await api.agents();
-        const match = agents.find((row) => row.id === stored) || agents[0];
+        const match = agents.find((row) => row.id === status.demo_agent_id) || agents[0];
         if (match && !cancelled) {
           await loadAgent(match.id);
         } else if (!cancelled) {

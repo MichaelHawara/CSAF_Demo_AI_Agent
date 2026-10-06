@@ -3,12 +3,13 @@ import { useDemo } from "../demoContext";
 import { api } from "../services/api";
 import type { Agent, AgentDetail } from "../types";
 import { EventFeed } from "../components/EventFeed";
+import { OperatorTabs } from "../components/OperatorTabs";
 
 export function ControlPage() {
   const demo = useDemo();
   const [agents, setAgents] = useState<Agent[]>([]);
   const [detail, setDetail] = useState<AgentDetail | null>(null);
-  const [name, setName] = useState("Nozi lab instance");
+  const [name, setName] = useState("Alex lab instance");
   const [provider, setProvider] = useState("mock");
   const [mode, setMode] = useState("vulnerable");
   const [error, setError] = useState("");
@@ -58,6 +59,7 @@ export function ControlPage() {
 
   return (
     <div className="page">
+      <OperatorTabs />
       <h1>Agent Control Center</h1>
       <p className="muted">
         Creating an agent creates a configuration and memory space. It does not train a new model.

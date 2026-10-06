@@ -53,7 +53,7 @@ def load_demo(db: Session = Depends(get_db)):
         agent = agent_service.create_agent(
             db,
             AgentCreate(
-                display_name="Nozi",
+                display_name="Alex",
                 customer_id=DEMO_CUSTOMER_ID,
                 provider="mock",
                 mode="vulnerable",
@@ -74,7 +74,7 @@ def load_demo(db: Session = Depends(get_db)):
         "budget": 80.0,
         "max_quantity": 1,
         "checkout_confirmation": "Required",
-        "message": "Demo reset. Load the prepared request in the Nozi panel and send it.",
+        "message": "Demo reset. Load the prepared request in Alex's panel and send it.",
     }
 
 

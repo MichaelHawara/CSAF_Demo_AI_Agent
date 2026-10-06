@@ -4,7 +4,6 @@ This file tracks the foundation work Cursor implements. Student-reserved feature
 
 ## Foundation checklist
 
-- [x] Inspect the repository
 - [x] Scaffold frontend (React / TypeScript / Vite) and backend (FastAPI)
 - [x] Create database models and repeatable seed data
 - [x] Build Nozama product browsing, cart, and fake checkout
