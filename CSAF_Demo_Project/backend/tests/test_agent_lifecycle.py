@@ -38,6 +38,22 @@ def test_backend_startup_clears_demo_conversation(client):
     assert detail["system_instruction"].startswith("You are Alex,")
 
 
+def test_backend_startup_migrates_legacy_product_schema(client):
+    from fastapi.testclient import TestClient
+    from sqlalchemy import text
+
+    from app.database import get_engine
+    from app.main import app
+
+    with get_engine().begin() as connection:
+        connection.execute(text("ALTER TABLE products DROP COLUMN url"))
+
+    with TestClient(app) as restarted_client:
+        response = restarted_client.get("/api/products")
+
+    assert response.status_code == 200
+
+
 def test_delete_removes_agent_owned_records(client):
     created = client.post(
         "/api/agents",

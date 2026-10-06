@@ -8,6 +8,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import inspect, text
 
 from app.api import agents, cart, checkout, control, products
 from app.database import Base, get_engine, get_session_factory
@@ -22,10 +23,20 @@ from fastapi.staticfiles import StaticFiles
 """
 
 
+def _ensure_product_url_column(engine) -> None:
+    columns = {column["name"] for column in inspect(engine).get_columns("products")}
+    if "url" not in columns:
+        with engine.begin() as connection:
+            connection.execute(
+                text("ALTER TABLE products ADD COLUMN url VARCHAR(400) NOT NULL DEFAULT ''")
+            )
+
+
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     engine = get_engine()
     Base.metadata.create_all(bind=engine)
+    _ensure_product_url_column(engine)
     session = get_session_factory()()
     try:
         seed_database(session)
