@@ -1,8 +1,9 @@
 import { XRayBoard } from "../components/XRayBoard";
-import { useDemo } from "../demoContext";
+import { useDemo, useLiveSync } from "../demoContext";
 
 export function XRayPage() {
   const demo = useDemo();
+  useLiveSync();
   return (
     <div className="page">
       <h1>Agent X-Ray</h1>
@@ -10,7 +11,7 @@ export function XRayPage() {
         Presenter view. Column 1 is the shopper. Column 2 is assembled model input — not hidden
         chain-of-thought. Column 3 is what the application actually did.
       </p>
-      <XRayBoard xray={demo.xray} attackResult={demo.attackResult} />
+      <XRayBoard xray={demo.xray} requestSummary={demo.requestSummary} />
     </div>
   );
 }

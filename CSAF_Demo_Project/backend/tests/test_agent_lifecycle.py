@@ -8,7 +8,7 @@ def test_reset_clears_cart_and_conversation(client):
         json={"content": "Find wireless headphones under $80"},
     )
     cart = client.get(f"/api/cart/{DEMO_CUSTOMER_ID}").json()
-    assert cart["quantity"] == 5
+    assert cart["quantity"] >= 5  # the poisoned SonicMax listing adds a random lot
     client.post(f"/api/agents/{DEMO_AGENT_ID}/reset")
     cart = client.get(f"/api/cart/{DEMO_CUSTOMER_ID}").json()
     assert cart["quantity"] == 0

@@ -65,7 +65,6 @@ export function ProductPage() {
         agent={demo.agent}
         cart={demo.cart}
         messages={demo.messages}
-        attackResult={demo.attackResult}
         xray={demo.xray}
         busy={demo.busy}
         onRefresh={demo.refresh}

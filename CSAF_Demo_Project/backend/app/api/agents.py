@@ -48,11 +48,13 @@ def get_agent(agent_id: str, db: Session = Depends(get_db)):
                 "content": m.content,
                 "tool_name": m.tool_name,
                 "created_at": m.created_at.isoformat(),
+                "attachments": agent_service.message_attachments(m),
             }
             for m in messages
         ],
         "xray": agent_service.xray_payload(agent),
-        "attack_result": agent_service.attack_result_payload(agent),
+        "request_summary": agent_service.request_summary_payload(agent),
+        "checkout_receipt": agent_service.checkout_receipt_payload(agent),
     }
 
 

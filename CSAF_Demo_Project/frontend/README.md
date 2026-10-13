@@ -24,7 +24,7 @@ Vite gives fast local reload for a live demo. TypeScript catches broken API fiel
 
 ## How it connects
 
-The UI never imports the Google GenAI SDK and never decides budget policy. It displays whatever FastAPI returns: public product JSON (no hidden seller fields), cart totals calculated on the server, attack banners, and event lines. `demoContext.tsx` holds the selected agent so Shop and X-Ray stay in sync.
+The UI never imports the Google GenAI SDK and never decides budget policy. It displays whatever FastAPI returns: public product JSON (no hidden seller fields), cart totals calculated on the server, neutral security summaries, and event lines. `demoContext.tsx` holds the selected agent so Shop and X-Ray stay in sync.
 
 ## What students should modify
 

@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
-import { AttackBanner } from "./AttackBanner";
+import { SecuritySummary } from "./SecuritySummary";
 import { ProductCard } from "./ProductCard";
-import type { AttackResult, Product, XRayState } from "../types";
+import type { RequestSummary, Product, XRayState } from "../types";
 
 const STEPS = [
   "1. Customer asks",
@@ -14,10 +14,10 @@ const STEPS = [
 
 export function XRayBoard({
   xray,
-  attackResult,
+  requestSummary,
 }: {
   xray: XRayState | null;
-  attackResult?: AttackResult | null;
+  requestSummary?: RequestSummary | null;
 }) {
   const [step, setStep] = useState(xray?.current_step || 1);
   const [reveal, setReveal] = useState(false);
@@ -33,7 +33,7 @@ export function XRayBoard({
 
   return (
     <div>
-      <AttackBanner result={attackResult} />
+      <SecuritySummary result={requestSummary} />
       <div className="steps">
         {STEPS.map((label, index) => (
           <button

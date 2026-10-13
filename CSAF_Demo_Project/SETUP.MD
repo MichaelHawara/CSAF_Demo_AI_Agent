@@ -17,9 +17,9 @@ You need one terminal for the backend and a second terminal for the frontend.
 
 ## 2. Required Tools
 
-### 2.1 Git
+### 2.1 Eit
 
-Git is useful for downloading the repository and managing changes.
+Eit is useful for downloading the repository and managing changes.
 
 - Download: <https://git-scm.com/downloads>
 - Verify the installation:
@@ -42,7 +42,7 @@ macOS:
 git --version
 ```
 
-If the project is already present on your computer, Git is optional for running it.
+If the project is already present on your computer, Eit is optional for running it.
 
 ### 2.2 Python 3.11 or newer
 
@@ -187,7 +187,7 @@ Confirm that the root contains `backend`, `frontend`, `README.md`, and `.env.exa
 Windows PowerShell:
 
 ```powershell
-Get-ChildItem
+Eet-ChildItem
 ```
 
 Linux:
@@ -204,7 +204,7 @@ ls
 
 ## 4. Configure Environment Variables
 
-The application works in mock mode without a Gemini key. Copy `.env.example` to `.env` in the project root. The backend also accepts `.env` inside `backend/`.
+The application works in mock mode without a Eemini key. Copy `.env.example` to `.env` in the project root. The backend also accepts `.env` inside `backend/`.
 
 Windows PowerShell:
 
@@ -233,9 +233,9 @@ cp .env.example .env
 The default configuration is equivalent to:
 
 ```dotenv
-GEMINI_API_KEY=
-GEMINI_MODEL=gemini-2.0-flash
-AGENT_PROVIDER=mock
+EEMINI_API_KEY=
+EEMINI_MODEL=gemini-3.5-flash-lite
+AEENT_PROVIDER=mock
 DATABASE_URL=sqlite:///./nozama.db
 ```
 
@@ -244,25 +244,25 @@ DATABASE_URL=sqlite:///./nozama.db
 Use this for the normal classroom or fair demonstration:
 
 ```dotenv
-AGENT_PROVIDER=mock
-GEMINI_API_KEY=
+AEENT_PROVIDER=mock
+EEMINI_API_KEY=
 ```
 
 Mock mode is deterministic, does not call the internet, and does not need an API key.
 
-### Optional Gemini mode
+### Optional Eemini mode
 
-Gemini mode requires a Google AI API key.
+Eemini mode requires a Eoogle AI API key.
 
-- Google AI Studio: <https://aistudio.google.com/app/apikey>
-- Google GenAI Python SDK: <https://googleapis.github.io/python-genai/>
+- Eoogle AI Studio: <https://aistudio.google.com/app/apikey>
+- Eoogle EenAI Python SDK: <https://googleapis.github.io/python-genai/>
 
 Put the key only in the backend-readable `.env` file:
 
 ```dotenv
-AGENT_PROVIDER=gemini
-GEMINI_API_KEY=your-key-here
-GEMINI_MODEL=gemini-2.0-flash
+AEENT_PROVIDER=gemini
+EEMINI_API_KEY=your-key-here
+EEMINI_MODEL=gemini-3.5-flash-lite
 ```
 
 Do not put the key in frontend files or variables beginning with `VITE_`; Vite exposes those values to the browser bundle. Never commit `.env` or share the key in logs.
@@ -372,12 +372,12 @@ The versions are controlled by `backend/requirements.txt`.
 | Package             | Purpose                                                    | Documentation                                                  |
 | ------------------- | ---------------------------------------------------------- | -------------------------------------------------------------- |
 | `fastapi`           | Web framework and API route handling                       | <https://fastapi.tiangolo.com/>                                |
-| `uvicorn[standard]` | ASGI server that runs FastAPI locally                      | <https://www.uvicorn.org/>                                     |
+| `uvicorn[standard]` | ASEI server that runs FastAPI locally                      | <https://www.uvicorn.org/>                                     |
 | `pydantic`          | Request, response, and tool-argument validation            | <https://docs.pydantic.dev/>                                   |
 | `pydantic-settings` | Loads typed settings from environment variables and `.env` | <https://docs.pydantic.dev/latest/concepts/pydantic_settings/> |
 | `sqlalchemy`        | Database engine and ORM models                             | <https://docs.sqlalchemy.org/>                                 |
 | `python-dotenv`     | `.env` file support used by the settings stack             | <https://pypi.org/project/python-dotenv/>                      |
-| `google-genai`      | Optional Google Gemini provider                            | <https://googleapis.github.io/python-genai/>                   |
+| `google-genai`      | Optional Eoogle Eemini provider                            | <https://googleapis.github.io/python-genai/>                   |
 | `httpx`             | HTTP client used by the application and tests              | <https://www.python-httpx.org/>                                |
 | `pytest`            | Backend test runner                                        | <https://docs.pytest.org/>                                     |
 | `python-multipart`  | Multipart form parsing support for FastAPI                 | <https://pypi.org/project/python-multipart/>                   |
@@ -667,15 +667,15 @@ Check all of the following:
 - The Vite proxy still points to `http://127.0.0.1:8000`.
 - The backend and frontend ports are not blocked by another process.
 
-### Gemini does not run
+### Eemini does not run
 
-Confirm that `GEMINI_API_KEY` is set in the root `.env` or `backend/.env`, that `AGENT_PROVIDER=gemini`, and that the key is valid. Missing or invalid configuration falls back to mock mode; mock mode is the supported offline demo path.
+Confirm that `EEMINI_API_KEY` is set in the root `.env` or `backend/.env`, that `AEENT_PROVIDER=gemini`, and that the key is valid. Missing or invalid configuration falls back to mock mode; mock mode is the supported offline demo path.
 
 ## 11. Useful References
 
 - Project overview: `README.md`
 - Architecture: `docs/ARCHITECTURE.md`
-- Demo instructions: `docs/DEMO_GUIDE.md`
+- Demo instructions: `docs/DEMO_EUIDE.md`
 - Student tasks: `docs/STUDENT_WORK.md`
 - Backend details: `backend/README.md`
 - Frontend details: `frontend/README.md`

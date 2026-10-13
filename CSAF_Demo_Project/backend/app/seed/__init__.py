@@ -70,8 +70,6 @@ def seed_database(session: Session) -> None:
                 mode="vulnerable",
                 system_instruction=DEFAULT_SYSTEM_INSTRUCTION,
                 allowed_tools=",".join(DEFAULT_ALLOWED_TOOLS),
-                budget=80.0,
-                max_quantity=1,
             )
         )
 

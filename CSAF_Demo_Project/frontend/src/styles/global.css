@@ -84,6 +84,7 @@ select {
 
 .nav-search input {
   flex: 1;
+  min-width: 0;
   border: 0;
   padding: 10px 12px;
   border-radius: 4px 0 0 4px;
@@ -110,7 +111,7 @@ select {
 
 .shop-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 380px;
+  grid-template-columns: minmax(0, 1fr) 480px;
   gap: 16px;
   align-items: start;
 }
@@ -160,9 +161,12 @@ select {
 }
 
 .thumb {
-  height: 140px;
-  border-radius: 6px;
   display: flex;
+  width: 100%;
+  max-width: 100%;
+  height: 140px;
+  object-fit: contain;
+  border-radius: 6px;
   align-items: center;
   justify-content: center;
   color: #fff;
@@ -236,6 +240,7 @@ select {
   top: 12px;
   display: flex;
   flex-direction: column;
+  height: calc(100vh - 24px);
   max-height: calc(100vh - 24px);
 }
 
@@ -341,10 +346,11 @@ select {
   background: #f7f8fa;
   border-radius: 6px;
   padding: 8px;
-  min-height: 80px;
-  max-height: 220px;
+  flex: 1 1 340px;
+  min-height: 300px;
   overflow: auto;
-  font-size: 0.9rem;
+  font-size: 1rem;
+  line-height: 1.45;
 }
 
 .bubble {
@@ -367,7 +373,7 @@ select {
 
 textarea.prompt {
   width: 100%;
-  min-height: 88px;
+  min-height: 72px;
   resize: vertical;
   padding: 8px;
   border-radius: 6px;
@@ -385,45 +391,351 @@ textarea.prompt {
   color: var(--muted);
 }
 
-.banner {
-  border-radius: 8px;
-  padding: 14px 16px;
-  margin-bottom: 12px;
-  font-weight: 700;
-}
-
-.banner.success {
-  background: #b12704;
-  color: #fff;
-}
-
-.banner.blocked {
-  background: #067d62;
-  color: #fff;
-}
-
-.banner p {
-  font-weight: 500;
-  margin: 6px 0 0;
-}
-
 .detail {
   display: grid;
-  grid-template-columns: 280px 1fr;
+  grid-template-columns: minmax(200px, 320px) minmax(0, 1fr);
   gap: 18px;
+  align-items: start;
   background: #fff;
   padding: 18px;
   border-radius: 8px;
 }
 
-@media (max-width: 720px) {
-  .detail {
-    grid-template-columns: 1fr;
-  }
+/* Grid children may not shrink below their content by default, which let a
+   large image push the text column underneath it. */
+.detail > * {
+  min-width: 0;
+}
+
+.detail h1 {
+  margin-top: 0;
+  overflow-wrap: anywhere;
+}
+
+.detail p {
+  overflow-wrap: anywhere;
 }
 
 .detail .thumb {
-  height: 240px;
+  height: 280px;
+  background: #fff;
+  border: 1px solid #e3e6e6;
+}
+
+/* The Alex sidebar takes ~480px, so stack the image above the text well
+   before the viewport itself is narrow. */
+@media (max-width: 1280px) {
+  .detail {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .detail .thumb {
+    height: 240px;
+  }
+}
+
+/* Between 700px and 960px the sidebar drops below the page, so the detail
+   card has the full width again. */
+@media (min-width: 700px) and (max-width: 960px) {
+  .detail {
+    grid-template-columns: minmax(200px, 320px) minmax(0, 1fr);
+  }
+}
+
+/* Demo-mode indicators */
+.demo-bar {
+  background: #fff4cc;
+  color: #5c4400;
+  border-bottom: 1px solid #f0d9a6;
+  font-size: 0.8rem;
+  padding: 5px 18px;
+  text-align: center;
+}
+
+.demo-bar strong {
+  letter-spacing: 0.06em;
+  margin-right: 6px;
+}
+
+.demo-info {
+  background: #eef6ff;
+  border: 1px solid #c7defa;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 0.85rem;
+  color: #1d3b5c;
+}
+
+.demo-info strong {
+  display: block;
+  margin-bottom: 2px;
+}
+
+/* Product cards inside the chat */
+.chat-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.chat-card {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 10px;
+  background: #fff;
+  border: 1px solid #dde0e2;
+  border-radius: 8px;
+  padding: 8px;
+  font-weight: 400;
+}
+
+.chat-card-image .thumb {
+  height: 72px;
+  border: 1px solid #eceeef;
+  background: #fff;
+}
+
+.chat-card-body {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.chat-card-name {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.chat-card-name:hover {
+  text-decoration: underline;
+}
+
+.chat-card-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.chat-card-controls input {
+  width: 56px;
+  padding: 4px 6px;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+}
+
+/* Cart */
+.cart-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 16px;
+  align-items: start;
+}
+
+@media (max-width: 860px) {
+  .cart-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.cart-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cart-row {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  background: var(--card);
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+@media (max-width: 560px) {
+  .cart-row {
+    grid-template-columns: 72px minmax(0, 1fr);
+  }
+
+  .cart-subtotal {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+.cart-image .thumb {
+  height: 96px;
+  background: #fff;
+  border: 1px solid #eceeef;
+}
+
+.cart-info {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cart-name {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.cart-name:hover {
+  text-decoration: underline;
+}
+
+.cart-controls {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid #bbb;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.stepper button {
+  border: 0;
+  background: #f0f2f2;
+  width: 32px;
+  height: 30px;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.stepper button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.stepper span {
+  min-width: 36px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.link-button {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: #007185;
+  cursor: pointer;
+}
+
+.link-button:hover {
+  text-decoration: underline;
+}
+
+.cart-subtotal {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.cart-summary h3 {
+  margin-top: 0;
+}
+
+/* Checkout details */
+.receipt {
+  border: 1px solid #b9dccf;
+  background: #f4fbf8;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.9rem;
+}
+
+.receipt h3 {
+  margin: 0 0 2px;
+  color: var(--ok);
+  font-size: 1rem;
+}
+
+.receipt-lines {
+  list-style: none;
+  margin: 8px 0;
+  padding: 0;
+}
+
+.receipt-lines li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 10px;
+  align-items: baseline;
+  padding: 4px 0;
+  border-bottom: 1px dashed #d4e6df;
+}
+
+.receipt-name {
+  overflow-wrap: anywhere;
+}
+
+.receipt-totals {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 12px;
+  margin: 8px 0;
+}
+
+.receipt-totals dt,
+.receipt-totals dd {
+  margin: 0;
+}
+
+.receipt-totals dd {
+  text-align: right;
+}
+
+.receipt-final {
+  font-weight: 800;
+  border-top: 1px solid #b9dccf;
+  padding-top: 4px;
+  margin-top: 4px;
+}
+
+.receipt-note {
+  margin: 6px 0 0;
+  color: #24574a;
+  font-size: 0.82rem;
+}
+
+/* Operator summary of recorded events */
+.summary-panel {
+  background: #f1f4f8;
+  border-left: 4px solid var(--nav-mid);
+  border-radius: 6px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+}
+
+.summary-panel h4 {
+  margin: 0 0 6px;
+}
+
+.summary-panel ul {
+  margin: 0 0 6px;
+  padding-left: 18px;
+}
+
+.summary-panel p {
+  margin: 4px 0 0;
 }
 
 .xray {
@@ -514,6 +826,10 @@ textarea.prompt {
   color: #c586c0;
 }
 
+.terminal .DEMO {
+  color: #79c0ff;
+}
+
 .terminal .RESULT {
   color: #4ec9b0;
 }
@@ -578,4 +894,34 @@ pre.wrap {
   font-size: 0.8rem;
   color: var(--muted);
   margin-top: 24px;
+}
+/* Agent selection */
+.agent-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.agent-row-info {
+  min-width: 0;
+}
+
+.agent-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.85rem;
+}
+
+.agent-picker label {
+  font-weight: 700;
+}
+
+.agent-picker select {
+  padding: 6px 8px;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+  max-width: 100%;
 }

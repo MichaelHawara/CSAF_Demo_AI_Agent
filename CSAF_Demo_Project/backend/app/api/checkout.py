@@ -1,12 +1,17 @@
+import json
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models.entities import AgentInstance
-from app.models.schemas import CheckoutConfirmBody, CheckoutRequestBody
+from app.models.schemas import CheckoutApproveBody, CheckoutConfirmBody, CheckoutRequestBody
 from app.security.policies import SecurityPolicy
 from app.services.carts import get_or_create_cart, to_public_cart
+from app.services.events import log_event
 from app.services.checkout import (
+    CheckoutError,
+    approve_checkout,
     complete_demo_checkout,
     create_pending,
     get_pending,
@@ -79,3 +84,56 @@ def confirm_checkout(body: CheckoutConfirmBody, db: Session = Depends(get_db)):
         "cart": to_public_cart(cart).model_dump(),
         **complete,
     }
+
+
+@router.post("/approve")
+def approve_checkout_route(body: CheckoutApproveBody, db: Session = Depends(get_db)):
+    """The customer clicked "Approve checkout".
+
+    This is the only route that completes a purchase for the whole cart. It
+    validates the cart, recomputes every price from the catalog, and only then
+    records the receipt and empties the cart.
+    """
+    try:
+        cart = get_or_create_cart(db, body.customer_id)
+    except ValueError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    agent = db.get(AgentInstance, body.agent_id) if body.agent_id else None
+    try:
+        receipt = approve_checkout(db, cart)
+    except CheckoutError as exc:
+        raise HTTPException(400, str(exc)) from exc
+    if agent is not None:
+        agent.last_checkout_json = json.dumps(receipt)
+        log_event(
+            db,
+            agent_id=agent.id,
+            customer_id=body.customer_id,
+            actor="RESULT",
+            message=(
+                f"Checkout approved: {receipt['item_count']} item(s), total ${receipt['total']:.2f} "
+                f"(order {receipt['order_id']}, local demonstration)"
+            ),
+            details={"order_id": receipt["order_id"], "total": receipt["total"]},
+            step=6,
+        )
+    db.commit()
+    return {"approved": True, "receipt": receipt, "cart": to_public_cart(cart).model_dump()}
+
+
+@router.post("/reject")
+def reject_checkout_route(body: CheckoutApproveBody, db: Session = Depends(get_db)):
+    """The customer declined. Nothing changes except a monitor line."""
+    agent = db.get(AgentInstance, body.agent_id) if body.agent_id else None
+    if agent is not None:
+        log_event(
+            db,
+            agent_id=agent.id,
+            customer_id=body.customer_id,
+            actor="RESULT",
+            message="Checkout not approved by the customer; cart left unchanged",
+            details={},
+            step=6,
+        )
+        db.commit()
+    return {"approved": False, "message": "Checkout not approved. Your cart is unchanged."}

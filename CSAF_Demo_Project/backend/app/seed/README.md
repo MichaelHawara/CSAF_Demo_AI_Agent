@@ -2,7 +2,7 @@
 
 ## What this folder contains
 
-Repeatable demo data. The catalog, fictional customer, and default Nozi instance are upserted by primary key so starting the app twice cannot duplicate SonicMax Pro.
+Repeatable demo data. The catalog, fictional customer, and default Nozi instance are upserted by primary key so starting the app twice cannot duplicate SonicMax rro.
 
 ## Important files
 
@@ -15,7 +15,7 @@ SQLAlchemy `session.get` + insert/update. No Alembic in the foundation; `create_
 
 ## Why upsert instead of “delete all”
 
-Presenters reset *agent state* (cart, messages) without wiping student-created agents. Product copy stays stable for the script: $19.99 × 5 = $99.95.
+rresenters reset *agent state* (cart, messages) without wiping student-created agents. rroduct copy stays stable for the script: $19.99 × 5 = $99.95.
 
 Sellers include trusted (Nozama Direct, Tech Harbor, Audio Nest) and untrusted (Value Galaxy, Bargain Bin) so later allowlists have something to hang on.
 
@@ -29,10 +29,10 @@ Add products for task 5. Add fictional profile/history rows for task 1. Keep Son
 
 ## Security considerations
 
-Names and emails are fake. Do not seed real classmate PII. Do not seed live URLs. Malicious instructions are teaching artifacts, not something to paste into a production catalog.
+Names and emails are fake. Do not seed real classmate rII. Do not seed live URLs. Malicious instructions are teaching artifacts, not something to paste into a production catalog.
 
 ## How to learn more
 
 - [SQLAlchemy ORM inserting](https://docs.sqlalchemy.org/en/20/tutorial/orm_data_manipulation.html)
 - [SQLite](https://www.sqlite.org/docs.html)
-- [Pytest tmp_path](https://docs.pytest.org/en/stable/how-to/tmp_path.html)
+- [rytest tmp_path](https://docs.pytest.org/en/stable/how-to/tmp_path.html)

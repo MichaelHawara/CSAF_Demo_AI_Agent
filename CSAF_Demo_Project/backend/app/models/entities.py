@@ -123,12 +123,23 @@ class AgentInstance(Base):
     mode: Mapped[str] = mapped_column(String(32), default="vulnerable")
     system_instruction: Mapped[str] = mapped_column(Text, default="")
     allowed_tools: Mapped[str] = mapped_column(Text, default="")
-    budget: Mapped[float] = mapped_column(Float, default=80.0)
-    max_quantity: Mapped[int] = mapped_column(Integer, default=1)
+    # Limits for the *current request*, parsed by the backend from the
+    # customer's own message (app/services/request_parser.py). They are not
+    # presets. 0 means "not stated / no request yet" so older SQLite files
+    # that declared these columns NOT NULL keep working.
+    budget: Mapped[float] = mapped_column(Float, default=0.0)
+    max_quantity: Mapped[int] = mapped_column(Integer, default=0)
+    # Units and dollars the agent has added to the cart during the current
+    # request. Patched mode checks limits against these, so leftovers from an
+    # earlier request cannot block a legitimate new one.
+    turn_quantity: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    turn_spent: Mapped[float] = mapped_column(Float, default=0.0, server_default="0")
     mock_phase: Mapped[int] = mapped_column(Integer, default=0)
     last_xray_json: Mapped[str] = mapped_column(Text, default="{}")
     last_attempt_json: Mapped[str] = mapped_column(Text, default="{}")
     last_result_json: Mapped[str] = mapped_column(Text, default="{}")
+    # Receipt of the last checkout the customer approved ("" until then).
+    last_checkout_json: Mapped[str] = mapped_column(Text, default="", server_default="")
     status: Mapped[str] = mapped_column(String(80), default="idle")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
@@ -178,6 +189,8 @@ class ConversationMessage(Base):
     role: Mapped[str] = mapped_column(String(32))
     content: Mapped[str] = mapped_column(Text, default="")
     tool_name: Mapped[str] = mapped_column(String(80), default="")
+    # JSON shown under the message in the chat (product cards), "" when none.
+    attachments_json: Mapped[str] = mapped_column(Text, default="", server_default="")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
     agent = relationship("AgentInstance", back_populates="messages")

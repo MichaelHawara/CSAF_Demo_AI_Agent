@@ -27,6 +27,12 @@ class SecurityPolicy:
 
     Quantity is enforced alongside budget because the prepared attack is a
     quantity *and* total violation. Content filtering is left to students.
+
+    The limits are not presets. They are the budget and quantity the backend
+    parsed out of the customer's own message for the current request
+    (``agent.budget`` / ``agent.max_quantity``, 0 meaning "not stated"), and
+    they are checked against what the agent has already added *during that
+    request* so older cart contents never count against a new request.
     """
 
     def evaluate_add_to_cart(
@@ -34,14 +40,15 @@ class SecurityPolicy:
         agent: AgentInstance,
         product: Product,
         quantity: int,
-        current_qty: int,
-        current_total: float,
+        request_qty: int,
+        request_total: float,
     ) -> PolicyDecision:
+        """`request_qty` / `request_total`: units and dollars already added this request."""
         if quantity < 1:
             return PolicyDecision(False, "Quantity must be at least 1.", "invalid_quantity")
 
-        attempted_qty = current_qty + quantity
-        attempted_total = money(current_total + product.price * quantity)
+        attempted_qty = request_qty + quantity
+        attempted_total = money(request_total + product.price * quantity)
 
         if agent.mode != "patched":
             return PolicyDecision(
@@ -54,13 +61,15 @@ class SecurityPolicy:
             )
 
         reasons: list[str] = []
-        if attempted_qty > agent.max_quantity:
+        max_quantity = int(agent.max_quantity or 0)
+        budget = float(agent.budget or 0.0)
+        if max_quantity and attempted_qty > max_quantity:
             reasons.append(
-                f"Quantity {attempted_qty} exceeds allowed maximum {agent.max_quantity}."
+                f"Quantity {attempted_qty} exceeds the {max_quantity} the customer asked for."
             )
-        if attempted_total - 1e-9 > agent.budget:
+        if budget and attempted_total - 1e-9 > budget:
             reasons.append(
-                f"Independent total ${attempted_total:.2f} exceeds budget ${agent.budget:.2f}."
+                f"Independent total ${attempted_total:.2f} exceeds the customer's budget ${budget:.2f}."
             )
         if reasons:
             return PolicyDecision(
@@ -68,7 +77,37 @@ class SecurityPolicy:
                 "Quantity and budget violation detected. " + " ".join(reasons),
                 "quantity_budget_violation",
             )
-        return PolicyDecision(True, "Cart change is within stored budget and quantity.", "ok")
+        return PolicyDecision(
+            True, "Cart change is within the budget and quantity the customer asked for.", "ok"
+        )
+
+    def evaluate_customer_data_access(self, agent: AgentInstance) -> PolicyDecision:
+        """Profile / order-history lookups. A shopping request does not need them."""
+        if agent.mode != "patched":
+            return PolicyDecision(
+                True,
+                "Vulnerable mode lets the assistant read customer account data on request.",
+                "vulnerable_data_access",
+            )
+        return PolicyDecision(
+            False,
+            "Customer account data is not available to the shopping assistant for a product search.",
+            "customer_data_access_denied",
+        )
+
+    def evaluate_outbound(self, agent: AgentInstance, destination: str) -> PolicyDecision:
+        """Data leaving the app. Nothing the assistant does needs it."""
+        if agent.mode != "patched":
+            return PolicyDecision(
+                True,
+                "Vulnerable mode does not restrict where the assistant sends data.",
+                "vulnerable_outbound_allow",
+            )
+        return PolicyDecision(
+            False,
+            "Sending customer data to an outside destination is not permitted for the shopping assistant.",
+            "outbound_denied",
+        )
 
     def evaluate_checkout(
         self,

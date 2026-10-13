@@ -1,57 +1,76 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import { CheckoutReceiptPanel } from "../components/CheckoutReceiptPanel";
 import { useDemo } from "../demoContext";
 import { api } from "../services/api";
 
 export function CheckoutPage() {
   const demo = useDemo();
   const [message, setMessage] = useState("");
-  const [pending, setPending] = useState<Record<string, unknown> | null>(null);
+  const [working, setWorking] = useState(false);
+  const cart = demo.cart;
+  const empty = !cart || cart.items.length === 0;
 
-  async function request() {
+  async function decide(approve: boolean) {
     if (!demo.agent) return;
-    const result = await api.requestCheckout(demo.agent.customer_id, demo.agent.id);
-    setPending((result.pending as Record<string, unknown>) || null);
-    setMessage(String(result.message || result.reason || JSON.stringify(result)));
-    await demo.refresh();
-  }
-
-  async function confirm() {
-    if (!demo.agent || !pending) return;
-    const result = await api.confirmCheckout({
-      pending_id: pending.id,
-      customer_id: pending.customer_id,
-      product_id: pending.product_id,
-      seller_id: pending.seller_id,
-      quantity: pending.quantity,
-      unit_price: pending.unit_price,
-      total: pending.total,
-    });
-    setMessage(String(result.message || "Confirmed"));
-    await demo.refresh();
+    setMessage("");
+    setWorking(true);
+    try {
+      if (approve) {
+        await api.approveCheckout(demo.agent.customer_id, demo.agent.id);
+      } else {
+        setMessage((await api.rejectCheckout(demo.agent.customer_id, demo.agent.id)).message);
+      }
+      await demo.refresh();
+    } catch (err) {
+      setMessage(err instanceof Error ? err.message : "Checkout failed");
+    } finally {
+      setWorking(false);
+    }
   }
 
   return (
     <div className="page">
-      <h1>Fake checkout</h1>
-      <p>No payment provider is connected. Confirmation is bound to exact cart details.</p>
-      {demo.cart ? (
+      <h1>Checkout</h1>
+      <p className="muted">
+        No payment provider is connected. Approving checkout records an order in this local demonstration only.
+      </p>
+      {!empty ? (
         <div className="card">
+          <ul className="receipt-lines">
+            {cart!.items.map((item) => (
+              <li key={item.id}>
+                <span className="receipt-name">{item.product_name}</span>
+                <span className="muted">
+                  {item.quantity} × ${item.unit_price.toFixed(2)}
+                </span>
+                <strong>${item.line_total.toFixed(2)}</strong>
+              </li>
+            ))}
+          </ul>
           <p>
-            {demo.cart.quantity} item(s) · ${demo.cart.total.toFixed(2)}
+            Subtotal ({cart!.quantity} items): <strong>${cart!.total.toFixed(2)}</strong>
           </p>
-          {demo.cart.demo_checked_out ? <p>Demo checkout already completed for this cart.</p> : null}
+          <div className="row">
+            <button className="btn" type="button" onClick={() => decide(true)} disabled={working}>
+              Approve checkout
+            </button>
+            <button className="btn secondary" type="button" onClick={() => decide(false)} disabled={working}>
+              Not now
+            </button>
+            <Link className="btn ghost" to="/cart">
+              Edit cart
+            </Link>
+          </div>
         </div>
-      ) : null}
-      <div className="row">
-        <button className="btn" type="button" onClick={request}>
-          Request checkout
-        </button>
-        <button className="btn secondary" type="button" onClick={confirm} disabled={!pending}>
-          Confirm these exact details
-        </button>
-      </div>
-      {message ? <pre className="wrap">{message}</pre> : null}
-      <p className="footer-note">Demo transaction only—no real purchase occurred.</p>
+      ) : (
+        <p>
+          Your cart is empty. <Link to="/">Continue shopping</Link>
+        </p>
+      )}
+      {message ? <p className="muted">{message}</p> : null}
+      {demo.checkoutReceipt ? <CheckoutReceiptPanel receipt={demo.checkoutReceipt} /> : null}
+      <p className="footer-note">Demo mode: synthetic data only. No real purchase occurs.</p>
     </div>
   );
 }

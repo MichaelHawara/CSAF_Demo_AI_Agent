@@ -7,12 +7,11 @@ from app.models.schemas import AgentCreate
 from app.services import agents as agent_service
 from app.services.constants import (
     DEFAULT_ALLOWED_TOOLS,
-    DEFAULT_SYSTEM_INSTRUCTION,
     DEMO_AGENT_ID,
     DEMO_CUSTOMER_ID,
-    DEMO_REQUEST,
 )
 from app.services.carts import get_or_create_cart, to_public_cart
+from app.services.demo_requests import build_demo_requests, pick_random_request
 from app.seed import seed_database
 from app.models.entities import AgentInstance
 
@@ -29,9 +28,7 @@ def status(db: Session = Depends(get_db)):
         "requested_provider": settings.agent_provider,
         "demo_agent_id": DEMO_AGENT_ID,
         "demo_customer_id": DEMO_CUSTOMER_ID,
-        "demo_request": DEMO_REQUEST,
-        "budget": 80.0,
-        "max_quantity": 1,
+        "demo_request_count": len(build_demo_requests(db)),
         "checkout_confirmation": "Required",
         "deterministic_demo_mode": not settings.gemini_configured or settings.effective_provider == "mock",
         "demo_agent": agent_service.to_public(agent).model_dump() if agent else None,
@@ -45,8 +42,19 @@ def status(db: Session = Depends(get_db)):
     }
 
 
+@router.get("/demo-requests")
+def demo_requests(db: Session = Depends(get_db)):
+    """Every request the Load Demo Request button can choose from."""
+    return [item.public() for item in build_demo_requests(db)]
+
+
 @router.post("/load-demo")
-def load_demo(db: Session = Depends(get_db)):
+def load_demo(exclude: str | None = None, db: Session = Depends(get_db)):
+    """Reset the demo agent and hand back a random catalog-based request.
+
+    `exclude` is the request currently on screen so the button never shows the
+    same one twice in a row.
+    """
     seed_database(db)
     agent = db.get(AgentInstance, DEMO_AGENT_ID)
     if agent is None:
@@ -55,11 +63,7 @@ def load_demo(db: Session = Depends(get_db)):
             AgentCreate(
                 display_name="Alex",
                 customer_id=DEMO_CUSTOMER_ID,
-                provider="mock",
                 mode="vulnerable",
-                budget=80.0,
-                max_quantity=1,
-                system_instruction=DEFAULT_SYSTEM_INSTRUCTION,
             ),
         )
         agent.id = DEMO_AGENT_ID
@@ -67,17 +71,17 @@ def load_demo(db: Session = Depends(get_db)):
         db.refresh(agent)
     agent = agent_service.reset_agent(db, agent)
     cart = get_or_create_cart(db, DEMO_CUSTOMER_ID)
+    picked = pick_random_request(db, exclude=exclude)
     return {
         "agent": agent_service.to_public(agent).model_dump(),
         "cart": to_public_cart(cart).model_dump(),
-        "demo_request": DEMO_REQUEST,
-        "budget": 80.0,
-        "max_quantity": 1,
+        "demo_request": picked.text if picked else "",
+        "demo_request_details": picked.public() if picked else None,
         "checkout_confirmation": "Required",
-        "message": "Demo reset. Load the prepared request in Alex's panel and send it.",
+        "message": "Demo reset. A request from the catalog is loaded; send it to Alex.",
     }
 
 
 @router.post("/reset-demo")
-def reset_demo(db: Session = Depends(get_db)):
-    return load_demo(db)
+def reset_demo(exclude: str | None = None, db: Session = Depends(get_db)):
+    return load_demo(exclude=exclude, db=db)

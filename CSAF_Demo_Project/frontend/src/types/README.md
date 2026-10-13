@@ -12,7 +12,7 @@ These are structural types, not runtime validators. The backend remains the auth
 
 ## Languages and technologies
 
-TypeScript `interface` and optional fields (`banner?: string`) because some payloads are empty `{}` before the first agent turn.
+TypeScript `interface` and optional fields (`security_summary?: string[]`) because some payloads are empty `{}` before the first agent turn.
 
 ## Why a types folder
 

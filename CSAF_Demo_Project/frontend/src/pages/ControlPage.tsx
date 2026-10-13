@@ -1,28 +1,40 @@
 import { FormEvent, useEffect, useState } from "react";
-import { useDemo } from "../demoContext";
+import { useDemo, useLiveSync } from "../demoContext";
 import { api } from "../services/api";
-import type { Agent, AgentDetail } from "../types";
+import type { Agent } from "../types";
+import { SecuritySummary } from "../components/SecuritySummary";
 import { EventFeed } from "../components/EventFeed";
 import { OperatorTabs } from "../components/OperatorTabs";
 
 export function ControlPage() {
   const demo = useDemo();
+  useLiveSync();
   const [agents, setAgents] = useState<Agent[]>([]);
-  const [detail, setDetail] = useState<AgentDetail | null>(null);
   const [name, setName] = useState("Alex lab instance");
   const [provider, setProvider] = useState("mock");
+  const [providerTouched, setProviderTouched] = useState(false);
   const [mode, setMode] = useState("vulnerable");
   const [error, setError] = useState("");
 
   async function refreshList() {
     setAgents(await api.agents());
-    if (demo.agent) {
-      setDetail(await api.agent(demo.agent.id));
-    }
   }
+
+  // New agents default to whatever the backend is configured to use (Gemini when a key is set).
+  useEffect(() => {
+    api
+      .status()
+      .then((status) => {
+        if (!providerTouched) setProvider(status.effective_provider);
+      })
+      .catch(() => undefined);
+  }, []);
 
   useEffect(() => {
     refreshList().catch((err) => setError(String(err)));
+    // Agents can also be created or removed from another tab.
+    const timer = window.setInterval(() => refreshList().catch(() => undefined), 5000);
+    return () => window.clearInterval(timer);
   }, [demo.agent?.id]);
 
   async function create(event: FormEvent) {
@@ -31,8 +43,6 @@ export function ControlPage() {
       display_name: name,
       provider,
       mode,
-      budget: 80,
-      max_quantity: 1,
     });
     await demo.selectAgent(created.id);
     await refreshList();
@@ -40,7 +50,6 @@ export function ControlPage() {
 
   async function select(id: string) {
     await demo.selectAgent(id);
-    setDetail(await api.agent(id));
   }
 
   async function saveMode(next: string) {
@@ -68,18 +77,34 @@ export function ControlPage() {
       <div className="control-grid">
         <div className="card">
           <h3>Agents</h3>
-          {agents.map((agent) => (
-            <div
-              key={agent.id}
-              className={`list-item ${demo.agent?.id === agent.id ? "active" : ""}`}
-              onClick={() => select(agent.id)}
-            >
-              <strong>{agent.display_name}</strong>
-              <div className="muted">
-                {agent.mode} · {agent.provider}
+          <p className="muted">
+            The selected agent is the one Alex, the Monitor and X-Ray use, in every open tab.
+          </p>
+          {agents.map((agent) => {
+            const selected = demo.agent?.id === agent.id;
+            return (
+              <div key={agent.id} className={`list-item agent-row ${selected ? "active" : ""}`}>
+                <div className="agent-row-info">
+                  <strong>{agent.display_name}</strong>
+                  <div className="muted">
+                    {agent.mode} · {agent.provider}
+                  </div>
+                </div>
+                {selected ? (
+                  <span className="badge trusted">Selected</span>
+                ) : (
+                  <button
+                    type="button"
+                    className="btn secondary"
+                    onClick={() => select(agent.id)}
+                    aria-label={`Select agent ${agent.display_name}`}
+                  >
+                    Select agent
+                  </button>
+                )}
               </div>
-            </div>
-          ))}
+            );
+          })}
           <form onSubmit={create} className="field" style={{ marginTop: 12 }}>
             <label>
               Display name
@@ -87,7 +112,10 @@ export function ControlPage() {
             </label>
             <label>
               Provider
-              <select value={provider} onChange={(e) => setProvider(e.target.value)}>
+              <select value={provider} onChange={(e) => {
+                  setProviderTouched(true);
+                  setProvider(e.target.value);
+                }}>
                 <option value="mock">mock</option>
                 <option value="gemini">gemini</option>
               </select>
@@ -107,13 +135,19 @@ export function ControlPage() {
         <div>
           {demo.agent ? (
             <div className="card">
-              <h3>{demo.agent.display_name}</h3>
+              <h3>
+                {demo.agent.display_name} <span className="badge trusted">Selected agent</span>
+              </h3>
               <p>
                 Agent ID: {demo.agent.id}
                 <br />
                 Customer ID: {demo.agent.customer_id}
                 <br />
                 Model: {demo.agent.model}
+                <br />
+                Detected from last request: budget{" "}
+                {demo.agent.detected_budget ? `$${demo.agent.detected_budget.toFixed(2)}` : "none"}, quantity{" "}
+                {demo.agent.detected_quantity || "none"}
                 <br />
                 Created: {demo.agent.created_at}
               </p>
@@ -138,8 +172,8 @@ export function ControlPage() {
                   type="button"
                   onClick={async () => {
                     await api.deleteAgent(demo.agent!.id);
-                    await api.loadDemo();
-                    await demo.refresh();
+                    const fresh = await api.loadDemo();
+                    await demo.selectAgent(fresh.agent.id);
                     await refreshList();
                   }}
                 >
@@ -147,14 +181,15 @@ export function ControlPage() {
                 </button>
               </div>
               <p>{demo.agent.provider_note}</p>
+              <SecuritySummary result={demo.requestSummary} />
               <h4>System instruction</h4>
               <pre className="wrap">{demo.agent.system_instruction}</pre>
               <h4>Allowed tools</h4>
               <p>{demo.agent.allowed_tools.join(", ")}</p>
               <h4>Current cart</h4>
-              <pre className="wrap">{JSON.stringify(detail?.cart || demo.cart, null, 2)}</pre>
+              <pre className="wrap">{JSON.stringify(demo.cart, null, 2)}</pre>
               <h4>Conversation</h4>
-              <pre className="wrap">{JSON.stringify(detail?.messages || demo.messages, null, 2)}</pre>
+              <pre className="wrap">{JSON.stringify(demo.messages, null, 2)}</pre>
               <h4>Activity events</h4>
               <EventFeed events={demo.events} />
             </div>

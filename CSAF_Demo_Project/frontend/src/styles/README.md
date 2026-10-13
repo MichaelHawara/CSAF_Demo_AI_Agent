@@ -6,7 +6,7 @@ Global visual design for the fictional Nozama storefront. The foundation uses on
 
 ## Important files
 
-- `global.css` — CSS variables (navy nav, orange accent), layout grids, product cards, Nozi sidebar, attack banners, X-Ray columns, and the dark activity terminal.
+- `global.css` — CSS variables (navy nav, orange accent), layout grids, product cards, Nozi sidebar, cart, chat cards, checkout details, demo-mode bar, X-Ray columns, and the dark activity terminal.
 
 Imported once from `main.tsx`. There is no CSS-in-JS runtime.
 
@@ -22,7 +22,7 @@ Product “images” are CSS gradients plus the first word of the name. That avo
 
 ## How it connects
 
-Components apply class names such as `btn`, `card`, `terminal`, `banner success`. Do not encode policy in color alone: banners also include the spec text (ATTACK SUCCEEDED / BLOCKED).
+Components apply class names such as `btn`, `card`, `terminal`, `summary-panel`. Do not encode policy in color alone: the monitor and summary panel always spell out what happened in words.
 
 ## What students should modify
 

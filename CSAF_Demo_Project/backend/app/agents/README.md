@@ -9,7 +9,7 @@ The model-provider abstraction and the turn loop that makes the fair demo work. 
 - `base.py` — `AgentProvider` protocol: `run_turn(agent, messages, tools, context) -> AgentTurnResult`.
 - `mock_provider.py` — deterministic SonicMax attack sequence (search, read, add five, checkout).
 - `gemini_provider.py` — official `google.genai` client, function declarations, AFC disabled.
-- `orchestrator.py` — message persistence, provider loop (max 8 turns), tool execution, attack banner math, X-Ray JSON.
+- `orchestrator.py` — message persistence, provider loop (max 12 turns), tool execution, neutral security summary lines, chat product recommendations, X-Ray JSON.
 
 ## Languages and technologies
 

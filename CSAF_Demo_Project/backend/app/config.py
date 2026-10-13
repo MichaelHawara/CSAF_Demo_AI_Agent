@@ -20,7 +20,8 @@ class Settings(BaseSettings):
     )
 
     gemini_api_key: str = ""
-    gemini_model: str = "gemini-2.0-flash"
+    # gemini-2.0-flash and gemini-2.5-flash have been retired for new users.
+    gemini_model: str = "gemini-3.1-flash-lite"
     agent_provider: str = "mock"
     database_url: str = "sqlite:///./nozama.db"
 

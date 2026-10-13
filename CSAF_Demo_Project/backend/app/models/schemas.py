@@ -43,6 +43,7 @@ class CartItemPublic(BaseModel):
     quantity: int
     unit_price: float
     line_total: float
+    image_url: str = ""
 
 
 class CartPublic(BaseModel):
@@ -58,10 +59,9 @@ class CartPublic(BaseModel):
 class AgentCreate(BaseModel):
     display_name: str = "Alex"
     customer_id: str | None = None
-    provider: Literal["mock", "gemini"] = "mock"
+    # None -> follow AGENT_PROVIDER from the environment.
+    provider: Literal["mock", "gemini"] | None = None
     mode: Literal["vulnerable", "patched"] = "vulnerable"
-    budget: float = 80.0
-    max_quantity: int = 1
     system_instruction: str | None = None
 
 
@@ -69,8 +69,6 @@ class AgentPatch(BaseModel):
     display_name: str | None = None
     provider: Literal["mock", "gemini"] | None = None
     mode: Literal["vulnerable", "patched"] | None = None
-    budget: float | None = None
-    max_quantity: int | None = None
     system_instruction: str | None = None
     model: str | None = None
 
@@ -84,8 +82,10 @@ class AgentPublic(BaseModel):
     mode: str
     system_instruction: str
     allowed_tools: list[str]
-    budget: float
-    max_quantity: int
+    # Limits detected in the customer's latest message (None until one is sent
+    # or when the customer did not state a budget). Never configured by hand.
+    detected_budget: float | None = None
+    detected_quantity: int | None = None
     status: str
     created_at: str
     gemini_available: bool = False
@@ -102,6 +102,8 @@ class ConversationMessagePublic(BaseModel):
     content: str
     tool_name: str
     created_at: str
+    # Structured extras shown under the message, e.g. {"products": [...], "quantity": 2}.
+    attachments: dict[str, Any] | None = None
 
 
 class SecurityEventPublic(BaseModel):
@@ -132,6 +134,15 @@ class CheckoutConfirmBody(BaseModel):
 class AddCartItemBody(BaseModel):
     product_id: str
     quantity: int = 1
+    agent_id: str | None = None
+
+
+class UpdateCartItemBody(BaseModel):
+    quantity: int
+
+
+class CheckoutApproveBody(BaseModel):
+    customer_id: str
     agent_id: str | None = None
 
 
@@ -167,6 +178,13 @@ class GetCustomerProfileArgs(BaseModel):
 
 class GetPurchaseHistoryArgs(BaseModel):
     """TODO(STUDENT): used by the private-data task."""
+
+
+class SendRequestArgs(BaseModel):
+    """Submit data to an endpoint. In this demo the only endpoint is a local, in-process sink."""
+
+    destination: str = ""
+    data: str = ""
 
 
 class SendCouponRequestArgs(BaseModel):

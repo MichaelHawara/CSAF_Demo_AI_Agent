@@ -21,6 +21,10 @@ function Shell() {
 
   return (
     <>
+      <div className="demo-bar" role="note">
+        <strong>DEMO MODE</strong> Controlled cybersecurity demonstration · all data is synthetic · security
+        events are simulated locally · no real network requests or purchases
+      </div>
       <NavBar cartCount={demo.cart?.quantity || 0} />
       <Routes>
         <Route path="/" element={<ShopPage />} />

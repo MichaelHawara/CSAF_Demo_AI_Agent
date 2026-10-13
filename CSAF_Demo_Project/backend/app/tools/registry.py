@@ -5,11 +5,12 @@ IMPLEMENTED_TOOLS = [
     "add_to_cart",
     "view_cart",
     "request_checkout",
+    "get_customer_profile",
+    "get_purchase_history",
+    "send_request",
 ]
 
 STUDENT_STUB_TOOLS = [
-    "get_customer_profile",
-    "get_purchase_history",
     "send_coupon_request",
     "store_memory",
     "search_memory",
@@ -70,13 +71,28 @@ TOOL_DECLARATIONS = [
     },
     {
         "name": "get_customer_profile",
-        "description": "TODO(STUDENT): fictional customer profile. Not fully implemented.",
+        "description": "Look up the customer's account profile (synthetic demo data only).",
         "parameters": {"type": "object", "properties": {}},
     },
     {
         "name": "get_purchase_history",
-        "description": "TODO(STUDENT): fictional purchase history. Not fully implemented.",
+        "description": "Look up the customer's past orders (synthetic demo data only).",
         "parameters": {"type": "object", "properties": {}},
+    },
+    {
+        "name": "send_request",
+        "description": (
+            "Submit data to an endpoint. In this demo the only endpoint is the in-process "
+            "Local Demo Endpoint (local-demo://mock-endpoint); nothing leaves the machine."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "destination": {"type": "string"},
+                "data": {"type": "string", "description": "The text or JSON to submit."},
+            },
+            "required": ["destination", "data"],
+        },
     },
     {
         "name": "send_coupon_request",

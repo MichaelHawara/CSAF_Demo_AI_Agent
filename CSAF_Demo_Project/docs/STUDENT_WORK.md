@@ -62,7 +62,7 @@ Every reserved task uses `TODO(STUDENT)` in code. Do not add vague TODOs of your
 
 **Goal.** Trusted-seller allowlist, approved-domain allowlist, redirect validation, suspicious-price detection, blocking malicious destinations.
 
-**Why it matters.** Budget rules stop the $99.95 cart. Trust rules stop *why* SonicMax was treated as a normal listing and stop fake coupon URLs.
+**Why it matters.** Budget and quantity rules stop the oversized cart. Trust rules stop *why* SonicMax was treated as a normal listing and stop fake coupon URLs.
 
 **Files.** `backend/app/security/trust.py`, product search ranking, `send_coupon_request`, optional UI badges (already have a simple trusted flag).
 
@@ -126,10 +126,10 @@ Every reserved task uses `TODO(STUDENT)` in code. Do not add vague TODOs of your
 
 **Security.** Do not weaken redaction tests. Do not add real payment fields “for realism.”
 
-**Steps.** Add Vitest + Testing Library if you want component tests. Playwright/Cypress only if you can keep it local. Check contrast on the attack banner.
+**Steps.** Add Vitest + Testing Library if you want component tests. Playwright/Cypress only if you can keep it local. Check contrast on the demo-mode bar and the security summary panel.
 
 **Acceptance.** `pytest` still passes. `npm run build` still passes. You can run the demo with keyboard only.
 
-**Tests to add.** Frontend: Load Demo Request fills the textarea. E2E: vulnerable then patched banners. A11y: axe or Lighthouse on `/` and `/xray`.
+**Tests to add.** Frontend: Load Demo Request fills the textarea. E2E: vulnerable then patched monitor summaries. A11y: axe or Lighthouse on `/` and `/xray`.
 
 **Learn more.** [Pytest](https://docs.pytest.org/), [React](https://react.dev/), [Vite](https://vite.dev/), [WCAG](https://www.w3.org/WAI/standards-guidelines/wcag/).

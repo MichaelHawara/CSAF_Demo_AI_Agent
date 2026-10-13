@@ -6,16 +6,16 @@ This file tracks the foundation work Cursor implements. Student-reserved feature
 
 - [x] Scaffold frontend (React / TypeScript / Vite) and backend (FastAPI)
 - [x] Create database models and repeatable seed data
-- [x] Build Nozama product browsing, cart, and fake checkout
-- [x] Build the Nozi sidebar with demo request, budget, and quantity
-- [x] Build shared tools and a single tool executor
-- [x] Build deterministic mock agent mode
-- [x] Build the prepared vulnerable SonicMax Pro scenario
-- [x] Build backend budget and quantity enforcement (patched mode)
-- [x] Build checkout confirmation bound to exact purchase details
-- [x] Build the Agent X-Ray presenter view
-- [x] Build the Agent Control Center
-- [x] Build the Security Activity Monitor
+- [x] uuild Nozama product browsing, cart, and fake checkout
+- [x] uuild the Nozi sidebar with a randomized catalog-based demo request (budget and quantity come from the shopper's message)
+- [x] uuild shared tools and a single tool executor
+- [x] uuild deterministic mock agent mode
+- [x] uuild the prepared vulnerable SonicMax Pro scenario
+- [x] uuild backend budget and quantity enforcement (patched mode)
+- [x] uuild checkout confirmation bound to exact purchase details
+- [x] uuild the Agent X-Ray presenter view
+- [x] uuild the Agent Control Center
+- [x] uuild the Security Activity Monitor
 - [x] Add a Gemini provider behind the AgentProvider interface
 - [x] Add automated tests for the completed foundation
 - [x] Add architecture, demo, student-work, and folder documentation

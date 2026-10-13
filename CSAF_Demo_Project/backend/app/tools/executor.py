@@ -28,6 +28,7 @@ from app.models.schemas import (
     SearchMemoryArgs,
     SearchProductsArgs,
     SendCouponRequestArgs,
+    SendRequestArgs,
     StoreMemoryArgs,
     ToolExecutionResult,
     ViewCartArgs,
@@ -43,6 +44,7 @@ from app.tools.handlers import (
     tool_search_memory,
     tool_search_products,
     tool_send_coupon_request,
+    tool_send_request,
     tool_store_memory,
     tool_view_cart,
 )
@@ -58,6 +60,7 @@ SCHEMA_AND_HANDLER: dict[str, tuple[type[BaseModel], Handler]] = {
     "request_checkout": (RequestCheckoutArgs, tool_request_checkout),
     "get_customer_profile": (GetCustomerProfileArgs, tool_get_customer_profile),
     "get_purchase_history": (GetPurchaseHistoryArgs, tool_get_purchase_history),
+    "send_request": (SendRequestArgs, tool_send_request),
     "send_coupon_request": (SendCouponRequestArgs, tool_send_coupon_request),
     "store_memory": (StoreMemoryArgs, tool_store_memory),
     "search_memory": (SearchMemoryArgs, tool_search_memory),
@@ -116,7 +119,7 @@ class ToolExecutor:
             agent_id=agent.id,
             customer_id=agent.customer_id,
             actor="AGENT",
-            message=f"Requested {name}",
+            message=f"Backend received tool request: {name}",
             details={"tool": name, "arguments": parsed.model_dump()},
             step=5 if name in {"add_to_cart", "request_checkout"} else 2,
         )
@@ -140,7 +143,7 @@ class ToolExecutor:
                 agent_id=agent.id,
                 customer_id=agent.customer_id,
                 actor="SECURITY",
-                message="Untrusted seller content entered context",
+                message="Security event recorded: untrusted seller content entered the model's context",
                 details={"product_id": parsed.model_dump().get("product_id")},
                 step=4,
             )
@@ -160,17 +163,19 @@ class ToolExecutor:
                 agent_id=agent.id,
                 customer_id=agent.customer_id,
                 actor="RESULT",
-                message="Action blocked",
+                message=f"Security event recorded: {name} was not allowed by the store backend",
                 details={"tool": name},
                 step=6,
             )
-        elif name == "add_to_cart" and agent.mode != "patched":
+        elif name in {"get_customer_profile", "get_purchase_history", "send_request"} and (
+            agent.mode != "patched" and result.ok
+        ):
             log_event(
                 db,
                 agent_id=agent.id,
                 customer_id=agent.customer_id,
                 actor="RESULT",
-                message="Action allowed in vulnerable mode",
+                message=f"Security event recorded: {name} ran without an independent backend check (vulnerable mode)",
                 details={"tool": name},
                 step=6,
             )

@@ -18,7 +18,12 @@ from app.models.entities import (
 )
 from app.models.schemas import AgentCreate, AgentPatch, AgentPublic
 from app.services.carts import clear_cart, get_or_create_cart
-from app.services.constants import DEFAULT_ALLOWED_TOOLS, DEFAULT_SYSTEM_INSTRUCTION, DEMO_CUSTOMER_ID
+from app.services.constants import (
+    DEFAULT_ALLOWED_TOOLS,
+    DEMO_CUSTOMER_ID,
+    is_default_instruction,
+    system_instruction_for_mode,
+)
 from app.agents.orchestrator import provider_note
 
 
@@ -37,8 +42,8 @@ def to_public(agent: AgentInstance) -> AgentPublic:
         mode=agent.mode,
         system_instruction=agent.system_instruction,
         allowed_tools=allowed_tool_list(agent),
-        budget=agent.budget,
-        max_quantity=agent.max_quantity,
+        detected_budget=agent.budget or None,
+        detected_quantity=agent.max_quantity or None,
         status=agent.status,
         created_at=agent.created_at.isoformat() if agent.created_at else "",
         gemini_available=settings.gemini_configured,
@@ -56,7 +61,7 @@ def get_agent(db: Session, agent_id: str) -> AgentInstance | None:
 
 def create_agent(db: Session, body: AgentCreate) -> AgentInstance:
     settings = get_settings()
-    provider = body.provider
+    provider = body.provider or settings.effective_provider
     model = settings.gemini_model if provider == "gemini" else "mock-deterministic"
     agent = AgentInstance(
         id=f"agent_{uuid.uuid4().hex[:10]}",
@@ -65,10 +70,8 @@ def create_agent(db: Session, body: AgentCreate) -> AgentInstance:
         provider=provider,
         model=model,
         mode=body.mode,
-        system_instruction=body.system_instruction or DEFAULT_SYSTEM_INSTRUCTION,
+        system_instruction=body.system_instruction or system_instruction_for_mode(body.mode),
         allowed_tools=",".join(DEFAULT_ALLOWED_TOOLS),
-        budget=body.budget,
-        max_quantity=body.max_quantity,
         created_at=datetime.now(timezone.utc),
     )
     db.add(agent)
@@ -86,11 +89,10 @@ def patch_agent(db: Session, agent: AgentInstance, body: AgentPatch) -> AgentIns
         agent.provider = body.provider
         agent.model = settings.gemini_model if body.provider == "gemini" else "mock-deterministic"
     if body.mode is not None:
+        # An unmodified prompt follows the mode; a hand-edited one is left alone.
+        if is_default_instruction(agent.system_instruction):
+            agent.system_instruction = system_instruction_for_mode(body.mode)
         agent.mode = body.mode
-    if body.budget is not None:
-        agent.budget = body.budget
-    if body.max_quantity is not None:
-        agent.max_quantity = body.max_quantity
     if body.system_instruction is not None:
         agent.system_instruction = body.system_instruction
     if body.model is not None:
@@ -113,9 +115,14 @@ def reset_agent(db: Session, agent: AgentInstance) -> AgentInstance:
     cart = get_or_create_cart(db, agent.customer_id)
     clear_cart(db, cart)
     agent.mock_phase = 0
+    agent.budget = 0.0
+    agent.max_quantity = 0
+    agent.turn_quantity = 0
+    agent.turn_spent = 0.0
     agent.last_xray_json = "{}"
     agent.last_attempt_json = "{}"
     agent.last_result_json = "{}"
+    agent.last_checkout_json = ""
     agent.status = "idle"
     db.commit()
     db.refresh(agent)
@@ -136,7 +143,26 @@ def xray_payload(agent: AgentInstance) -> dict:
         return {}
 
 
-def attack_result_payload(agent: AgentInstance) -> dict:
+def checkout_receipt_payload(agent: AgentInstance) -> dict | None:
+    """The last approved checkout, or None."""
+    if not (agent.last_checkout_json or "").strip():
+        return None
+    try:
+        return json.loads(agent.last_checkout_json)
+    except json.JSONDecodeError:
+        return None
+
+
+def message_attachments(message: ConversationMessage) -> dict | None:
+    if not (message.attachments_json or "").strip():
+        return None
+    try:
+        return json.loads(message.attachments_json)
+    except json.JSONDecodeError:
+        return None
+
+
+def request_summary_payload(agent: AgentInstance) -> dict:
     try:
         return json.loads(agent.last_result_json or "{}")
     except json.JSONDecodeError:

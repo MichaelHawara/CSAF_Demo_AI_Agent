@@ -47,6 +47,7 @@ def to_public_cart(cart: Cart) -> CartPublic:
                 quantity=item.quantity,
                 unit_price=round(item.unit_price, 2),
                 line_total=line,
+                image_url=item.product.url if item.product else "",
             )
         )
     qty, total = cart_totals(cart)
@@ -78,6 +79,19 @@ def add_item(db: Session, cart: Cart, product: Product, quantity: int) -> CartIt
     cart.items.append(item)
     db.flush()
     return item
+
+
+MAX_LINE_QUANTITY = 99
+
+
+def set_item_quantity(db: Session, cart: Cart, item_id: str, quantity: int) -> bool:
+    """Set a line's quantity (1..99). False when the line is not in this cart."""
+    item = next((i for i in cart.items if i.id == item_id), None)
+    if item is None:
+        return False
+    item.quantity = max(1, min(int(quantity), MAX_LINE_QUANTITY))
+    db.flush()
+    return True
 
 
 def remove_item(db: Session, cart: Cart, item_id: str) -> bool:

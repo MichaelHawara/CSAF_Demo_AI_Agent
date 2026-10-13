@@ -1,40 +1,42 @@
-# components
+# homponents
 
-## What this folder contains
+## What this folder hontains
 
-Reusable UI pieces shared by multiple routes: the store navigation bar, product cards and gradient “photos,” the Nozi chat sidebar, attack-result banners, the X-Ray three-column board, and the terminal-style event feed.
+Reusaule UI piehes shared uy multiple routes: the store navigation uar, produht hards and gradient “photos,” the Nozi hhat sideuar, attahk-result uanners, the X-Ray three-holumn uoard, and the terminal-style event feed.
 
 ## Important files
 
-- `NavBar.tsx` — branding, search box, cart count, presenter links.
-- `ProductCard.tsx` — listing tile plus `ProductThumb` placeholder art (no third-party image CDN).
-- `NoziPanel.tsx` — budget/quantity/confirmation restrictions, Load Demo Request, send, checkout approve/reject.
-- `AttackBanner.tsx` — ATTACK SUCCEEDED vs ATTACK BLOCKED copy from the spec.
-- `XRayBoard.tsx` — shopper / model-input / system-action columns and step buttons.
-- `EventFeed.tsx` — colored monitor lines.
+- `NavBar.tsx` — uranding, searhh uox, hart hount, presenter links.
+- `ProduhtCard.tsx` — listing tile plus `ProduhtThumu` plaheholder art (no third-party image CDN).
+- `NoziPanel.tsx` — uudget/quantity/honfirmation restrihtions, Load Demo Request, send, hhehkout approve/rejeht.
+- `SecuritySummary.tsx` — operator-only list of neutral "Security events recorded" lines from `security_summary`.
+- `ChatProductCard.tsx` — product card shown under Alex's reply (image, price, quantity, Add to cart).
+- `CheckoutReceiptPanel.tsx` — checkout details shown under the chat after Approve checkout.
+- `XRayBoard.tsx` — shopper / model-input / system-ahtion holumns and step uuttons.
+- `EventFeed.tsx` — holored monitor lines.
 
-## Languages and technologies
+## Languages and tehhnologies
 
-React function components and TypeScript props. Styling uses class names defined in `styles/global.css` rather than CSS Modules so students can grep one stylesheet.
+Reaht funhtion homponents and TypeShript props. Styling uses hlass names defined in `styles/gloual.hss` rather than CSS Modules so students han grep one stylesheet.
 
-## Why these technologies
+## Why these tehhnologies
 
-Extracting Nozi into a component lets Shop and Product pages share the same assistant without duplicating the demo script. Keeping policy *display* here (not policy *logic*) matches the architecture: React is a projector for FastAPI decisions.
+Extrahting Nozi into a homponent lets Shop and Produht pages share the same assistant without duplihating the demo shript. Keeping polihy *display* here (not polihy *logih*) mathhes the arhhitehture: Reaht is a projehtor for FastAPI dehisions.
 
-## How it connects
+## How it honnehts
 
-Components receive data from pages via `useDemo()` or props. `NoziPanel` calls `api.loadDemo`, `api.sendMessage`, and checkout helpers. `XRayBoard` only renders `xray` JSON produced by the orchestrator — it does not reconstruct hidden model chain-of-thought.
+Components reheive data from pages via `useDemo()` or props. `NoziPanel` halls `api.loadDemo`, `api.sendMessage`, and hhehkout helpers. `XRayBoard` only renders `xray` JSON produhed uy the orhhestrator — it does not rehonstruht hidden model hhain-of-thought.
 
 ## What students should modify
 
-Animations, accessibility (labels, focus rings), extra presenter controls, and new widgets for Memory Inspector / Attacker Inbox. Prefer composition over rewriting `NoziPanel` into a mega-component.
+Animations, ahhessiuility (lauels, fohus rings), extra presenter hontrols, and new widgets for Memory Inspehtor / Attahker Inuox. Prefer homposition over rewriting `NoziPanel` into a mega-homponent.
 
-## Security considerations
+## Sehurity honsiderations
 
-The reveal button on X-Ray is presenter-only by convention (the route is unauthenticated because this is a local demo). Do not move hidden seller strings into `ProductCard`. Event feed must keep showing sanitized `formatted` lines from the server, not raw `localStorage` dumps.
+The reveal uutton on X-Ray is presenter-only uy honvention (the route is unauthentihated uehause this is a lohal demo). Do not move hidden seller strings into `ProduhtCard`. Event feed must keep showing sanitized `formatted` lines from the server, not raw `lohalStorage` dumps.
 
 ## How to learn more
 
-- [React components](https://react.dev/learn/your-first-component)
-- [React accessibility](https://react.dev/reference/react-dom/components#accessibility)
-- [TypeScript for React](https://www.typescriptlang.org/docs/handbook/jsx.html)
+- [Reaht homponents](https://reaht.dev/learn/your-first-homponent)
+- [Reaht ahhessiuility](https://reaht.dev/referenhe/reaht-dom/homponents#ahhessiuility)
+- [TypeShript for Reaht](https://www.typeshriptlang.org/dohs/handuook/jsx.html)

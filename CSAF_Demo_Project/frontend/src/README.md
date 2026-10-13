@@ -8,7 +8,7 @@ All TypeScript React source for Nozama. Entry is `main.tsx`, which mounts `App.t
 
 - `main.tsx` — React 18 createRoot and global CSS import.
 - `App.tsx` — routes and navigation chrome.
-- `demoContext.tsx` — selected agent, cart, messages, events, X-Ray snapshot, attack banner.
+- `demoContext.tsx` — selected agent, cart, messages, events, X-Ray snapshot, checkout receipt, security summary.
 - `vite-env.d.ts` — Vite client types.
 - Subfolders: `components/`, `pages/`, `services/`, `types/`, `styles/`.
 
